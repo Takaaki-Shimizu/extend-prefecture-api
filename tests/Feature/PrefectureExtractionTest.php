@@ -12,7 +12,7 @@ class PrefectureExtractionTest extends TestCase
      */
     public function test_can_extract_prefecture_directly_from_address()
     {
-        $response = $this->post('/api/extract-prefecture', [
+        $response = $this->postJson('/api/extract-prefecture', [
             'address' => '〒314-0007 茨城県鹿嶋市神向寺後山２６−２'
         ]);
 
@@ -25,7 +25,7 @@ class PrefectureExtractionTest extends TestCase
      */
     public function test_can_extract_prefecture_from_simple_address()
     {
-        $response = $this->post('/api/extract-prefecture', [
+        $response = $this->postJson('/api/extract-prefecture', [
             'address' => '茨城県鹿嶋市神向寺後山２６−２'
         ]);
 
@@ -47,7 +47,7 @@ class PrefectureExtractionTest extends TestCase
         ];
 
         foreach ($testCases as $testCase) {
-            $response = $this->post('/api/extract-prefecture', [
+            $response = $this->postJson('/api/extract-prefecture', [
                 'address' => $testCase['address']
             ]);
 
@@ -61,9 +61,7 @@ class PrefectureExtractionTest extends TestCase
      */
     public function test_validation_fails_for_empty_address()
     {
-        $response = $this->withHeaders([
-            'Accept' => 'application/json',
-        ])->post('/api/extract-prefecture', [
+        $response = $this->postJson('/api/extract-prefecture', [
             'address' => ''
         ]);
 
@@ -77,12 +75,50 @@ class PrefectureExtractionTest extends TestCase
     {
         $longAddress = str_repeat('あ', 201);
 
-        $response = $this->withHeaders([
-            'Accept' => 'application/json',
-        ])->post('/api/extract-prefecture', [
+        $response = $this->postJson('/api/extract-prefecture', [
             'address' => $longAddress
         ]);
 
         $response->assertStatus(422);
+    }
+
+    /**
+     * HeartRails API検索のテスト
+     * 都道府県名が見つからない場合、市区町村+地名を抽出してHeartRails Geo APIに問い合わせ
+     */
+    public function test_can_extract_prefecture_via_heartrails_api()
+    {
+        $response = $this->postJson('/api/extract-prefecture', [
+            'address' => '渋谷区渋谷1-1-1'
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson(['prefecture' => '東京都']);
+    }
+
+    /**
+     * 郵便番号＋市区町村のパターンでHeartRails API検索のテスト
+     */
+    public function test_can_extract_prefecture_via_heartrails_api_with_postal_code()
+    {
+        $response = $this->postJson('/api/extract-prefecture', [
+            'address' => '〒150-0002 渋谷区渋谷1-1-1'
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson(['prefecture' => '東京都']);
+    }
+
+    /**
+     * 旧字表記でのHeartRails API検索のテスト
+     */
+    public function test_can_extract_prefecture_via_heartrails_api_with_old_character()
+    {
+        $response = $this->postJson('/api/extract-prefecture', [
+            'address' => '渋谷区大字渋谷1-1-1'
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson(['prefecture' => '東京都']);
     }
 }
