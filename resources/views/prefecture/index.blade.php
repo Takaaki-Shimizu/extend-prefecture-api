@@ -25,11 +25,11 @@
         <div class="examples">
             <h3>入力例</h3>
             <ul>
-                <li onclick="fillAddress('〒314-0007 茨城県鹿嶋市神向寺後山２６−２')">〒314-0007 茨城県鹿嶋市神向寺後山２６−２</li>
-                <li onclick="fillAddress('茨城県鹿嶋市神向寺後山２６−２')">茨城県鹿嶋市神向寺後山２６−２</li>
-                <li onclick="fillAddress('鹿嶋市神向寺後山２６−２')">鹿嶋市神向寺後山２６−２</li>
-                <li onclick="fillAddress('京都市中京区烏丸通二条下ル二条殿町538')">京都市中京区烏丸通二条下ル二条殿町538</li>
-                <li onclick="fillAddress('東京都新宿区歌舞伎町1-1-1')">東京都新宿区歌舞伎町1-1-1</li>
+                <li><button type="button" onclick="fillAddress('〒314-0007 茨城県鹿嶋市神向寺後山２６−２')">〒314-0007 茨城県鹿嶋市神向寺後山２６−２</button></li>
+                <li><button type="button" onclick="fillAddress('茨城県鹿嶋市神向寺後山２６−２')">茨城県鹿嶋市神向寺後山２６−２</button></li>
+                <li><button type="button" onclick="fillAddress('鹿嶋市神向寺後山２６−２')">鹿嶋市神向寺後山２６−２</button></li>
+                <li><button type="button" onclick="fillAddress('京都市中京区烏丸通二条下ル二条殿町538')">京都市中京区烏丸通二条下ル二条殿町538</button></li>
+                <li><button type="button" onclick="fillAddress('東京都新宿区歌舞伎町1-1-1')">東京都新宿区歌舞伎町1-1-1</button></li>
             </ul>
         </div>
     </div>
