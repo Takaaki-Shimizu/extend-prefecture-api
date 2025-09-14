@@ -65,4 +65,55 @@ class AddressParserTest extends TestCase
 
         $this->assertNull($result);
     }
+
+    public function test_can_extract_city_and_town()
+    {
+        $result = $this->parser->extractCity('鹿嶋市神向寺後山２６−２');
+
+        $this->assertEquals('鹿嶋市神向寺後山', $result);
+    }
+
+    public function test_can_extract_city_with_postal_code()
+    {
+        $result = $this->parser->extractCity('〒314-0007 鹿嶋市神向寺後山２６−２');
+
+        $this->assertEquals('鹿嶋市神向寺後山', $result);
+    }
+
+    public function test_can_extract_city_with_old_character()
+    {
+        $result = $this->parser->extractCity('鹿嶋市大字神向寺後山２６−２');
+
+        $this->assertEquals('鹿嶋市神向寺後山', $result);
+    }
+
+    public function test_can_extract_various_cities()
+    {
+        $testCases = [
+            '札幌市中央区南1条' => '札幌市中央区南',
+            '新宿区歌舞伎町1-1-1' => '新宿区歌舞伎町',
+            '京都市中京区烏丸通2丁目' => '京都市中京区烏丸通',
+            '大阪市北区梅田1番地' => '大阪市北区梅田',
+            '那覇市泉崎1-2-3' => '那覇市泉崎',
+        ];
+
+        foreach ($testCases as $address => $expected) {
+            $result = $this->parser->extractCity($address);
+            $this->assertEquals($expected, $result, "Failed to extract {$expected} from {$address}");
+        }
+    }
+
+    public function test_returns_null_when_no_city_found()
+    {
+        $result = $this->parser->extractCity('神向寺後山２６−２');
+
+        $this->assertNull($result);
+    }
+
+    public function test_returns_null_for_empty_string_city_extraction()
+    {
+        $result = $this->parser->extractCity('');
+
+        $this->assertNull($result);
+    }
 }
