@@ -38,6 +38,7 @@ class ExtractPrefectureUseCase
             } catch (ExternalResourceNotFoundException $e) {
                 // フェーズ3: AIフォールバック（未実装）
                 // 現在はそのまま例外をスロー
+                throw $e;
             }
         }
 
