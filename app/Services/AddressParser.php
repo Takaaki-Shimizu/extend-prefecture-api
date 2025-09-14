@@ -2,29 +2,26 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Cache;
+
 class AddressParser
 {
-    /**
-     * @var string|null Cached prefecture pattern
-     */
-    private static $prefecturePattern = null;
-
     /**
      * 都道府県名の直接抽出（正規表現）
      */
     public function extractPrefecture(string $clientAddress): ?string
     {
-        if (self::$prefecturePattern === null) {
+        $pattern = Cache::rememberForever('prefecture_pattern', function () {
             $prefectureList = config('prefectures.list');
-            self::$prefecturePattern = implode('|', array_map('preg_quote',
+            return implode('|', array_map('preg_quote',
                 $prefectureList,
                 array_fill(0, count($prefectureList), '/')
             ));
-        }
+        });
 
-        $pattern = '/(' . self::$prefecturePattern . ')/u';
+        $regex = '/(' . $pattern . ')/u';
 
-        if (preg_match($pattern, $clientAddress, $matches)) {
+        if (preg_match($regex, $clientAddress, $matches)) {
             return $matches[0];
         }
 
