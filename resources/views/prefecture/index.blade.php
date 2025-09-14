@@ -47,7 +47,10 @@
         function showResult(message, isSuccess) {
             resultDiv.style.display = 'block';
             resultDiv.className = isSuccess ? 'success' : 'error';
-            resultDiv.innerHTML = `<div class="result-title">${isSuccess ? '抽出結果' : 'エラー'}</div>${message}`;
+            resultDiv.innerHTML = `<div class="result-title">${isSuccess ? '抽出結果' : 'エラー'}</div>`;
+            const messageDiv = document.createElement('div');
+            messageDiv.textContent = message;
+            resultDiv.appendChild(messageDiv);
         }
 
         function showLoading() {
