@@ -33,7 +33,7 @@ class HeartRailsApiRepository implements HeartRailsApiInterface
             $contents = json_decode($response->getBody()->getContents(), true);
 
             if (isset($contents['response']['error'])) {
-                throw new ExternalResourceNotFoundException('HeartRails API returned error');
+                throw new ExternalResourceNotFoundException('HeartRails API returned error: ' . $contents['response']['error']);
             }
 
             if (!isset($contents['response']['location']) || empty($contents['response']['location'])) {
