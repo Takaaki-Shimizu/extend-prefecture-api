@@ -343,7 +343,7 @@ HEARTRAILS_GEO_API_URL=https://geoapi.heartrails.com/api/json
 
 # OpenAI Configuration
 OPENAI_API_KEY=your_openai_api_key_here
-OPENAI_MODEL=gpt-3.5-turbo
+OPENAI_MODEL=
 OPENAI_MAX_TOKENS=100
 OPENAI_TEMPERATURE=0.3
 
