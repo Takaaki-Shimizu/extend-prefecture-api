@@ -3,8 +3,10 @@
 namespace App\UseCases;
 
 use App\Services\AddressParser;
+use App\Services\AiApiFactory;
 use App\Repositories\Interfaces\HeartRailsApiInterface;
 use App\Exceptions\ExternalResourceNotFoundException;
+use Illuminate\Support\Facades\Log;
 use Exception;
 
 class ExtractPrefectureUseCase
@@ -36,12 +38,49 @@ class ExtractPrefectureUseCase
                     return $location->prefecture();
                 }
             } catch (ExternalResourceNotFoundException $e) {
-                // フェーズ3: AIフォールバック（未実装）
-                // 現在はそのまま例外をスロー
-                throw $e;
+                // フェーズ3: AIフォールバック
+                Log::info('HeartRails API failed, trying AI fallback', ['address' => $address]);
+                return $this->tryAiFallback($address);
             }
         }
 
+        // HeartRails APIでも見つからない場合はAIフォールバックを試行
+        Log::info('City not extracted, trying AI fallback directly', ['address' => $address]);
+        return $this->tryAiFallback($address);
+    }
+
+    private function tryAiFallback(string $address): string
+    {
+        $availableProviders = AiApiFactory::getAvailableProviders();
+
+        if (empty($availableProviders)) {
+            Log::warning('No AI providers available');
+            throw new Exception('都道府県が見つかりませんでした。（AI APIが利用できません）');
+        }
+
+        foreach ($availableProviders as $provider) {
+            try {
+                $aiApi = AiApiFactory::create($provider);
+                $prefecture = $aiApi->extractPrefectureByAi($address);
+
+                if ($prefecture) {
+                    Log::info('AI fallback succeeded', [
+                        'provider' => $provider,
+                        'address' => $address,
+                        'prefecture' => $prefecture
+                    ]);
+                    return $prefecture;
+                }
+            } catch (ExternalResourceNotFoundException $e) {
+                Log::warning('AI provider failed', [
+                    'provider' => $provider,
+                    'error' => $e->getMessage()
+                ]);
+                continue;
+            }
+        }
+
+        Log::error('All AI providers failed', ['address' => $address]);
         throw new Exception('都道府県が見つかりませんでした。');
     }
 }
